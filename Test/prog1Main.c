@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <string.h>
 
 #include "prog1Main.h"
 #include "prog1.h"
@@ -22,38 +23,41 @@ int mainProg1()
 void interp(A_stm stm)
 {
     Table_ t = checked_malloc(sizeof(*t));
-    interpStm(stm, t);
-    while(t)
+    Table_ t2 = interpStm(stm, t);
+    while(t2)
     {
-        printf("ID: %s\t\t\tValue: %d\n", t->id, t->value);
-        t = t->tail;
+        printf("ID: %s\t\t\tValue: %d\n", t2->id, t2->value);
+        t2 = t2->tail;
     }
 }
 
 Table_ interpStm(A_stm s, Table_ t)
 {
     switch(s->kind) {
-        case A_compoundStm:
+        case A_stm_::A_compoundStm:
             return interpStm(s->u.compound.stm2, interpStm(s->u.compound.stm1, t));
-        case A_assignStm: {
+        case A_stm_::A_assignStm: {
             IntAndTable_ iat = interpExp(s->u.assign.exp, t);
             return Table(s->u.assign.id, iat->i, iat->t);
         }
-        case A_printStm:
-            //TODO
-            break;
+        case A_stm_::A_printStm: {
+            IntAndTable_ iat = interpExpList(s->u.print.exps, t);
+            printf("%s\n", iat->s);
+            return iat->t;
+        }
     }
+    return t;
 }
 
 IntAndTable_ interpExp(A_exp e, Table_ t)
 {
     switch(e->kind) {
-        case A_idExp:
+        case A_exp_::A_idExp:
             //TODO
             //return IAT()
-        case A_numExp:
+        case A_exp_::A_numExp:
             return IAT(e->u.num, t);
-        case A_opExp:
+        case A_exp_::A_opExp:
             switch(e->u.op.oper) {
                 case A_plus: {
                     IntAndTable_ iat1 = interpExp(e->u.op.left, t);
@@ -76,9 +80,27 @@ IntAndTable_ interpExp(A_exp e, Table_ t)
                     return IAT(iat1->i / iat2->i, iat2->t);
                 }
             }
-        case A_eseqExp: {
+        case A_exp_::A_eseqExp: {
             Table_ t2 = interpStm(e->u.eseq.stm, t);
-            return interpExp(e->u.eseq.exp, t);
+            return interpExp(e->u.eseq.exp, t2);
+        }
+    }
+}
+
+IntAndTable_ interpExpList(A_expList e, Table_ t)
+{
+    switch(e->kind) {
+        case A_expList_::A_pairExpList: {
+            IntAndTable_ iat1 = interpExp(e->u.pair.head, t);
+            IntAndTable_ iat2 = interpExpList(e->u.pair.tail, iat1->t);
+            iat1->s = String((string) iat1->i);
+            iat2->s = String(strcat((string) iat2->i, strcat(" ", iat1->s));
+            return iat2;
+        }
+        case A_expList_::A_lastExpList: {
+            IntAndTable_ iat = interpExp(e->u.last, t);
+            iat->s = String((string) iat->i);
+            return iat;
         }
     }
 }
