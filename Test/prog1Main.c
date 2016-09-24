@@ -34,13 +34,13 @@ void interp(A_stm stm)
 Table_ interpStm(A_stm s, Table_ t)
 {
     switch(s->kind) {
-        case A_stm_::A_compoundStm:
+        case A_compoundStm:
             return interpStm(s->u.compound.stm2, interpStm(s->u.compound.stm1, t));
-        case A_stm_::A_assignStm: {
+        case A_assignStm: {
             IntAndTable_ iat = interpExp(s->u.assign.exp, t);
             return Table(s->u.assign.id, iat->i, iat->t);
         }
-        case A_stm_::A_printStm: {
+        case A_printStm: {
             IntAndTable_ iat = interpExpList(s->u.print.exps, t);
             printf("%s\n", iat->s);
             return iat->t;
@@ -52,12 +52,12 @@ Table_ interpStm(A_stm s, Table_ t)
 IntAndTable_ interpExp(A_exp e, Table_ t)
 {
     switch(e->kind) {
-        case A_exp_::A_idExp:
+        case A_idExp:
             //TODO
             //return IAT()
-        case A_exp_::A_numExp:
+        case A_numExp:
             return IAT(e->u.num, t);
-        case A_exp_::A_opExp:
+        case A_opExp:
             switch(e->u.op.oper) {
                 case A_plus: {
                     IntAndTable_ iat1 = interpExp(e->u.op.left, t);
@@ -80,7 +80,7 @@ IntAndTable_ interpExp(A_exp e, Table_ t)
                     return IAT(iat1->i / iat2->i, iat2->t);
                 }
             }
-        case A_exp_::A_eseqExp: {
+        case A_eseqExp: {
             Table_ t2 = interpStm(e->u.eseq.stm, t);
             return interpExp(e->u.eseq.exp, t2);
         }
@@ -90,14 +90,14 @@ IntAndTable_ interpExp(A_exp e, Table_ t)
 IntAndTable_ interpExpList(A_expList e, Table_ t)
 {
     switch(e->kind) {
-        case A_expList_::A_pairExpList: {
+        case A_pairExpList: {
             IntAndTable_ iat1 = interpExp(e->u.pair.head, t);
             IntAndTable_ iat2 = interpExpList(e->u.pair.tail, iat1->t);
             iat1->s = String((string) iat1->i);
-            iat2->s = String(strcat((string) iat2->i, strcat(" ", iat1->s));
+            iat2->s = String(strcat((string) iat2->i, strcat(" ", iat1->s)));
             return iat2;
         }
-        case A_expList_::A_lastExpList: {
+        case A_lastExpList: {
             IntAndTable_ iat = interpExp(e->u.last, t);
             iat->s = String((string) iat->i);
             return iat;
