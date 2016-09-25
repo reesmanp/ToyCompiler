@@ -15,5 +15,6 @@ typedef char bool;
 
 void *checked_malloc(int);
 string String(char *);
+string IntString(int);
 
 #endif //TOYCOMPILER_UTIL_H

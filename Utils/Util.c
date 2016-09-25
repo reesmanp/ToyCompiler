@@ -14,6 +14,13 @@ string String(char *s)
     return p;
 }
 
+string IntString(int i)
+{
+    char s[10];
+    sprintf(s, "%d", i);
+    return String(s);
+}
+
 void *checked_malloc(int len)
 {
     void *p = malloc(len);

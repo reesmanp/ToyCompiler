@@ -52,9 +52,10 @@ Table_ interpStm(A_stm s, Table_ t)
 IntAndTable_ interpExp(A_exp e, Table_ t)
 {
     switch(e->kind) {
-        case A_idExp:
-            //TODO
-            //return IAT()
+        case A_idExp: {
+            int i = lookup(t, e->u.id);
+            return IAT(i, t);
+        }
         case A_numExp:
             return IAT(e->u.num, t);
         case A_opExp:
@@ -93,13 +94,17 @@ IntAndTable_ interpExpList(A_expList e, Table_ t)
         case A_pairExpList: {
             IntAndTable_ iat1 = interpExp(e->u.pair.head, t);
             IntAndTable_ iat2 = interpExpList(e->u.pair.tail, iat1->t);
-            iat1->s = String((string) iat1->i);
-            iat2->s = String(strcat((string) iat2->i, strcat(" ", iat1->s)));
+            iat1->s = IntString(iat1->i);
+            char str[22];
+            strcpy(str, iat1->s);
+            strcat(str, " ");
+            strcat(str, iat2->s);
+            iat2->s = String(str);
             return iat2;
         }
         case A_lastExpList: {
             IntAndTable_ iat = interpExp(e->u.last, t);
-            iat->s = String((string) iat->i);
+            iat->s = IntString(iat->i);
             return iat;
         }
     }
