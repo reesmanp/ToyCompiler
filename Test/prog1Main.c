@@ -7,7 +7,7 @@
 
 #include "prog1Main.h"
 #include "prog1.h"
-#include "../Lex/A_.h"
+#include "../Intro/A_.h"
 #include "../Utils/Util.h"
 
 int mainProg1()

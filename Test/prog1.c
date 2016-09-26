@@ -4,7 +4,7 @@
 
 #include "prog1.h"
 #include "../Utils/Util.h"
-#include "../Lex/A_.h"
+#include "../Intro/A_.h"
 
 A_stm prog(void) {
     return
