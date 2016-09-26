@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "Utils/Util.h"
 #include "Lex/errormsg.h"
 #include "Lex/tokens.h"
@@ -23,7 +24,7 @@ string toknames[] = {
 };
 
 
-string tokname(tok) {
+string tokname(int tok) {
     return tok<257 || tok>299 ? "BAD_TOKEN" : toknames[tok-257];
 }
 
