@@ -28,3 +28,4 @@ void adjust(void)
 for  	 {adjust(); return FOR;}
 [0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
 .	 {adjust(); EM_error(EM_tokPos,"illegal token");}
+%%
